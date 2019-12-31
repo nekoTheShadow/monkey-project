@@ -191,8 +191,6 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 
 	return leftExp
-
-	return leftExp
 }
 
 func (p *Parser) parseIdentifier() ast.Expression {
