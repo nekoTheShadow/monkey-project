@@ -395,6 +395,14 @@ var builtins = map[string]*object.Builtin{
 			return NULL
 		},
 	},
+	"puts": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+			return NULL
+		},
+	},
 }
 
 func evalIndexExpression(left object.Object, index object.Object) object.Object {
