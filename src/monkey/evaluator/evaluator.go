@@ -466,3 +466,46 @@ func evalHashIndexExpression(hash object.Object, index object.Object) object.Obj
 	}
 	return pair.Value
 }
+
+func DefineMacros(program *ast.Program, env *object.Environment) {
+	definitions := []int{}
+	for i, statement := range program.Statements {
+		if isMacroDefinistions(statement) {
+			addMacro(statement, env)
+			definitions = append(definitions, i)
+		}
+	}
+
+	for i := len(definitions) - 1; i >= 0; i = i - 1 {
+		definistionIndex := definitions[i]
+		program.Statements = append(
+			program.Statements[:definistionIndex],
+			program.Statements[definistionIndex+1:]...,
+		)
+	}
+}
+
+func isMacroDefinistions(node ast.Statement) bool {
+	letStatement, ok := node.(*ast.LetStatement)
+	if !ok {
+		return false
+	}
+
+	_, ok = letStatement.Value.(*ast.MacroLiteral)
+	if !ok {
+		return false
+	}
+
+	return true
+}
+
+func addMacro(stmt ast.Statement, env *object.Environment) {
+	letStatement, _ := stmt.(*ast.LetStatement)
+	macroLiteral, _ := letStatement.Value.(*ast.MacroLiteral)
+	macro := &object.Macro{
+		Parameters: macroLiteral.Parameters,
+		Env:        env,
+		Body:       macroLiteral.Body,
+	}
+	env.Set(letStatement.Name.Value, macro)
+}
